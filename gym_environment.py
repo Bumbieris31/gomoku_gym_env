@@ -31,15 +31,19 @@ class GomokuEnv(Env):
     def render(self):
         blue = fg('blue')
         red = fg('red')
-        for i in self.game.board:
-            for j in self.game.board[i]:
-                if self.game.board[i][j] == 0:
-                    print('0 ', end='')
-                elif self.game.board[i][j] == 1:
+        white = fg('white')
+        board = self.game.board.get_board()
+        print(white + '-' * 38)
+        for line in board:
+            for num in line:
+                if num == 0:
+                    print(white + '0 ', end='')
+                elif num == 1:
                     print(blue + '1 ', end='')
                 else:
                     print(red + '2 ', end='')
-            print('\n')
+            print('')
+        print(white + '-' * 38)
         # self.game.print_board()
 
     def reset(self):
