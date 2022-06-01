@@ -33,6 +33,7 @@ class GomokuEnv(Env):
         red = fg('red')
         white = fg('white')
         board = self.game.board.get_board()
+        i = 0
         print(white + '-' * 38)
         for line in board:
             for num in line:
@@ -42,8 +43,10 @@ class GomokuEnv(Env):
                     print(blue + '1 ', end='')
                 else:
                     print(red + '2 ', end='')
-            print('')
+            print('| ' + i)
+            i += 1
         print(white + '-' * 38)
+        print('012345678901234567')
         # self.game.print_board()
 
     def reset(self):
@@ -52,7 +55,13 @@ class GomokuEnv(Env):
         self.done = False
 
     def reward(self):
+        # if player1 captured then + 0.2
+        # if player2 captured then - 0.2
+        # if player1 win then + 1
+        # if player2 win then - 1
+        # otherwise 0
         return 1
+
 
     def info(self):
         return "Giving info"
