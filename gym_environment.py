@@ -1,4 +1,4 @@
-from gym import MultiAgentEnv
+from gym import Env
 from gym.spaces import Discrete, Box
 from gomoku_game import GomokuGame
 import numpy as np
@@ -10,7 +10,7 @@ class RewardMethod(Enum):
     # HEURISTIC = 1 ?
 
 
-class GomokuEnv(MultiAgentEnv):
+class GomokuEnv(Env):
     def __init__(self):
         self.game = GomokuGame()
         self.action_space = Discrete(19 * 19)

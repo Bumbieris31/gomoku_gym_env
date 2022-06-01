@@ -18,9 +18,6 @@ class Board:
 			return self.arr[y][x]
 		return None
 
-	def getwithtuple(self, t: tuple[int, int]) -> Union[np.int8, None]:
-		return self.get(t[0], t[1])
-
 	def get_board(self) -> np.ndarray:
 		return self.arr
 
