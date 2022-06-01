@@ -11,15 +11,19 @@ class RewardMethod(Enum):
 
 
 class GomokuEnv(Env):
+    SIZE = 19
+
     def __init__(self):
         self.game = GomokuGame()
-        self.action_space = Discrete(19 * 19)
-        self.observation_space = Discrete(np.array([[0 for i in range(19)] for i in range(19)]))
+        self.action_space = Discrete(GomokuEnv.SIZE * GomokuEnv.SIZE)
+        self.observation_space = Box(0, 7, shape=(7, GomokuEnv.SIZE, GomokuEnv.SIZE))
         self.done = False
 
     def step(self, action):
         assert not self.done
-        self.game.make_move()
+        row = action // GomokuEnv.SIZE
+        col = action % GomokuEnv.SIZE
+        self.game.make_move(row, col)
         self.done = self.game.is_winning_move()
         return self.game.board, self.reward(), self.done, self.info()
 
