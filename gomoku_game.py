@@ -26,7 +26,7 @@ class GomokuGame():
         return True
 
     def is_winning_move(self, row: int, col: int) -> bool:
-        if GomokuGame.rules.is_winning_condition(row, col, self.player, self.captures):
+        if GomokuGame.rules.is_winning_condition(row, col, self.player, self.board, self.captures):
             return True
         return False
 
