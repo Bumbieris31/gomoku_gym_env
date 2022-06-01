@@ -3,6 +3,7 @@ from gym.spaces import Discrete, Box
 from gomoku_game import GomokuGame
 import numpy as np
 from enum import Enum
+from colored import fg
 
 
 class RewardMethod(Enum):
@@ -28,7 +29,18 @@ class GomokuEnv(Env):
         return self.game.board, self.reward(), self.done, self.info()
 
     def render(self):
-        self.game.print_board()
+        blue = fg('blue')
+        red = fg('red')
+        for i in self.game.board:
+            for j in self.game.board[i]:
+                if self.game.board[i][j] == 0:
+                    print('0 ', end='')
+                elif self.game.board[i][j] == 1:
+                    print(blue + '1 ', end='')
+                else:
+                    print(red + '2 ', end='')
+            print('\n')
+        # self.game.print_board()
 
     def reset(self):
         del self.game
