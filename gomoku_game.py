@@ -65,3 +65,6 @@ class GomokuGame():
             self.player = 2
         else:
             self.player = 1
+
+    def get_possible_moves(self):
+        pass
