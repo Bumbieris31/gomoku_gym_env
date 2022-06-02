@@ -43,10 +43,10 @@ class GomokuEnv(Env):
                     print(blue + '1 ', end='')
                 else:
                     print(red + '2 ', end='')
-            print('| ' + i)
+            print(white + '| ' + str(i))
             i += 1
         print(white + '-' * 38)
-        print('012345678901234567')
+        print('0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8')
         # self.game.print_board()
 
     def reset(self):
