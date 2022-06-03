@@ -1,12 +1,14 @@
 from board import Board
 from rules import Rules
 from typing import Union
+from gamestate import ObsLayer, GameState
 
 class GomokuGame():
     rules = Rules()
 
     def __init__(self):
         self.board = Board()
+        self.state = GameState()
         self.player = 1
         self.captures = [0, 0]
 
@@ -66,5 +68,5 @@ class GomokuGame():
         else:
             self.player = 1
 
-    def get_possible_moves(self):
+    def get_illegal_moves(self):
         pass

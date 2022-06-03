@@ -4,19 +4,12 @@ from gomoku_game import GomokuGame
 import numpy as np
 from enum import Enum
 from colored import fg
+from gamestate import ObsLayer
 
 
 class RewardMethod(Enum):
     REAL = 0
     # HEURISTIC = 1 ?
-
-class ObsLayer(Enum):
-    PLAYER1 = 0
-    PLAYER2 = 1
-    LEGAL_MOVES = 2
-    CAPTURED = 3
-    PLAYER1_TURN = 4
-
 
 class GomokuEnv(Env):
     SIZE = 19
