@@ -19,7 +19,7 @@ class GameState:
     SIZE = 19
 
     def __init__(self):
-        self.state = np.zeros((ObsLayer.LAYER_COUNT, GameState.SIZE, GameState.SIZE))
+        self.state = np.zeros((ObsLayer.LAYER_COUNT.value, GameState.SIZE, GameState.SIZE))
         self.combined = np.zeros((GameState.SIZE, GameState.SIZE))
 
     def get_illegal_moves(self):

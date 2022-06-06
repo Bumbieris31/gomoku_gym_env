@@ -60,7 +60,7 @@ class GomokuGame():
 
     def place_stone(self, row: int, col: int) -> None:
         self.board.set(row, col, self.player)
-        self.change_player()
+        # self.change_player()
 
     def change_player(self):
         if self.player == 1:

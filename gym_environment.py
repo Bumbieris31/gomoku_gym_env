@@ -26,6 +26,7 @@ class GomokuEnv(Env):
         col = action % GomokuEnv.SIZE
         self.game.make_move(row, col)
         self.done = self.game.is_winning_move(row, col)
+        self.game.change_player()
         return self.game.board, self.reward(), self.done, self.info()
 
     def render(self):
