@@ -24,4 +24,3 @@ for step in range(nsteps):
 
 env.render()
 env.close()
-

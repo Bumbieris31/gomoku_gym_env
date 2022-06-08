@@ -1,4 +1,3 @@
-from telnetlib import GA
 import numpy as np
 from enum import Enum
 
@@ -15,14 +14,15 @@ class ObsLayer(Enum):
 
 
 class GameState:
-    PLAYER_ONE = 0
-    PLAYER_TWO = 1
+    PLAYER1 = 0
+    PLAYER2 = 1
     SIZE = 19
 
     def __init__(self):
         self.state = np.zeros((ObsLayer.LAYER_COUNT.value, GameState.SIZE, GameState.SIZE))
         self.combined = np.zeros((GameState.SIZE, GameState.SIZE))
         self.open_threes = []
+        self.player = 0
 
     def get_illegal_moves(self):
         self.get_combined_board()
@@ -55,6 +55,8 @@ class GameState:
             for i in range(len(self.open_threes)):
                 # recheck if row and col is fine
                 row, col = self.open_threes[i][0], self.open_threes[i][1]
+                if self.state[ObsLayer.ILLEGAL_MOVES.value][row][col] or :
+
                 # check if open threes in this place
                 # if not open threes anymore delete that element self.open_threes.pop(i)
 

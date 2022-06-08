@@ -4,10 +4,11 @@ from typing import Union
 
 class Rules:
 	def __init__(self):
-		self.winner = None
+		# self.winner = None
 		self.dir = [(-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1)]
-		self.opp = [Board.get_relative_position(direction, -1) for direction in self.dir]
-		self.opp_val = [Board.get_relative_position(direction, -2) for direction in self.dir]
+		self.open_threes = []
+		# self.opp = [Board.get_relative_position(direction, -1) for direction in self.dir]
+		# self.opp_val = [Board.get_relative_position(direction, -2) for direction in self.dir]
 
 	def is_legal_move(self, row: int, col: int, player: int, board: Board) -> bool:
 		if self.is_two_open_threes(row, col, player, board):
