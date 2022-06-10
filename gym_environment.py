@@ -4,7 +4,6 @@ from gomoku_game import GomokuGame
 import numpy as np
 from enum import Enum
 from colored import fg
-from gamestate import ObsLayer
 
 
 class RewardMethod(Enum):

@@ -1,33 +1,32 @@
 import numpy as np
-from board import Board
 from typing import Union
 
 class Rules:
 	def __init__(self):
-		# self.winner = None
+		'''
+		Player passed to Rules class has to be either 1 or 2. In gomoku game player is either 0 or 1.
+		'''
 		self.dir = [(-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1)]
 		self.open_threes = []
-		# self.opp = [Board.get_relative_position(direction, -1) for direction in self.dir]
-		# self.opp_val = [Board.get_relative_position(direction, -2) for direction in self.dir]
 
-	def is_legal_move(self, row: int, col: int, player: int, board: Board) -> bool:
+	def is_legal_move(self, row: int, col: int, player: int, board: np.ndarray) -> bool:
 		if self.is_two_open_threes(row, col, player, board):
 			if self.is_capturing(row, col, player, board):
 				return True
 			return False
 		return True
 
-	def is_open_three(self, row: int, col: int, player: int, board: Board, d: tuple) -> bool:
+	def is_open_three(self, row: int, col: int, player: int, board: np.ndarray, d: tuple) -> bool:
 		inside_zero = False
 		first_zero = False
 		stones = 0
 		for i in range(1, 5):
-			rel = board.get_relative_position(d, i)
+			rel = self.get_relative_position(d, i)
 			if stones == 2:
-				if board.get(row + rel[0], col + rel[1]):
+				if board[row + rel[0], col + rel[1]]:
 					return False
 				break
-			if not board.get(row + rel[0], col + rel[1]):
+			if not board[row + rel[0], col + rel[1]]:
 				if inside_zero:
 					break
 				if first_zero:
@@ -42,12 +41,12 @@ class Rules:
 				return False
 		first_zero = False
 		for i in range(-1, -5, -1):
-			rel = board.get_relative_position(d, i)
+			rel = self.get_relative_position(d, i)
 			if stones == 2:
-				if board.get(row + rel[0], col + rel[1]):
+				if board[row + rel[0], col + rel[1]]:
 					return False
 				return True
-			if not board.get(row + rel[0], col + rel[1]):
+			if not board[row + rel[0], col + rel[1]]:
 				if inside_zero:
 					return False
 				if first_zero:
@@ -61,7 +60,7 @@ class Rules:
 				return False
 		return True
 
-	def is_two_open_threes(self, row: int, col: int, player: int, board: Board) -> bool:
+	def is_two_open_threes(self, row: int, col: int, player: int, board: np.ndarray) -> bool:
 		second_three = False
 		for direction in self.dir[:4]:
 			if self.is_open_three(row, col, player, board, direction):
@@ -76,7 +75,7 @@ class Rules:
 			return 1
 		return 2
 
-	def is_winning_condition(self, row: int, col: int, player: int, board: Board, captures: list) -> bool:
+	def is_winning_condition(self, row: int, col: int, player: int, board: np.ndarray, captures: list) -> bool:
 		if self.win_by_five(row, col, player, board):
 			# check if can be captured next move.
 			print('WIN \nby five in a row for player: ' + str(player))
@@ -93,8 +92,8 @@ class Rules:
 		return False
 
 	@staticmethod
-	def is_not_player_check(row: int, col: int, player_to_check: int, board: Board) -> bool:
-		return row < 0 or row >= 19 or col < 0 or col >= 19 or board.get(row, col) != player_to_check
+	def is_not_player_check(row: int, col: int, player_to_check: int, board: np.ndarray) -> bool:
+		return row < 0 or row >= 19 or col < 0 or col >= 19 or board[row, col] != player_to_check
 
 	def win_by_five(self, row: int, col: int, player: int, board: np.ndarray) -> bool:
 		d = [(-1, 0), (-1, -1), (0, -1), (1, -1)]
@@ -110,14 +109,23 @@ class Rules:
 		return False
 
 	# Add board to Rules class
-	def is_capturing(self, row: int, col: int, player: int, board: Board) -> Union[list, None]:
+	def is_capturing(self, row: int, col: int, player: int, board: np.ndarray) -> Union[list, None]:
 		opponent = self.opponent_value(player)
 		first_capture = []
 		for d in range(8):
 			if not self.is_not_player_check(row + self.dir[d][0], col + self.dir[d][1], opponent, board) \
 				and not self.is_not_player_check(row + 2 * self.dir[d][0], col + 2 * self.dir[d][1], opponent, board) \
 				and not self.is_not_player_check(row + 3 * self.dir[d][0], col + 3 * self.dir[d][1], player, board):
-				first_capture = first_capture + [(row + self.dir[d][0], col + self.dir[d][1]), (row + 2 * self.dir[d][0], col + 2 * self.dir[d][1])]
+				first_capture = first_capture + \
+								[(row + self.dir[d][0], col + self.dir[d][1]), (row + 2 * self.dir[d][0], col + 2 * self.dir[d][1])]
 		if len(first_capture):
 			return first_capture
 		return None
+
+	@staticmethod
+	def get_relative_position(direction: tuple, multiplier: int):
+		"""
+		Retrieve a relative position from a direction
+		multiplier == -1 being opposite direction
+		"""
+		return tuple([i * multiplier for i in direction])

@@ -16,8 +16,6 @@ for step in range(nsteps):
     action = row * (19) + col
     obs, reward, done, info = env.step(action)
     env.render()
-    # env.render()
-    # time.sleep(0.001)
     if done:
         print('Winning move: ', action)
         env.reset()

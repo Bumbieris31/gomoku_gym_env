@@ -3,7 +3,6 @@ from rules import Rules
 from typing import Union
 from enum import Enum
 import numpy as np
-from gamestate import ObsLayer, GameState
 
 
 class ObsLayer(Enum):
@@ -19,13 +18,14 @@ class ObsLayer(Enum):
 
 class GomokuGame():
     rules = Rules()
+    SIZE = 19
 
     def __init__(self):
-        self.board = Board()
-        self.state = np.zeros((ObsLayer.LAYER_COUNT.value, GameState.SIZE, GameState.SIZE))
-        self.combined = np.zeros((GameState.SIZE, GameState.SIZE))
+        self.state = np.zeros((ObsLayer.LAYER_COUNT.value, GomokuGame.SIZE, GomokuGame.SIZE))
+        self.combined = np.zeros((GomokuGame.SIZE, GomokuGame.SIZE))
         self.player = 1
         self.captures = [0, 0]
+        self.open_threes = [[], []]
 
     def print_board(self):
         print(self.board)
@@ -37,8 +37,8 @@ class GomokuGame():
         self.combined = np.add(self.state[ObsLayer.PLAYER1.value], player2_placement)
 
     def is_valid_move(self, row: int, col: int) -> bool:
-        if self.board.get(row, col) == 0:
-            if not GomokuGame.rules.is_legal_move(row, col, self.player, self.board):
+        if self.combined[row][col] == 0:
+            if not GomokuGame.rules.is_legal_move(row, col, self.player + 1, self.combined):
                 print("Illegal move")
                 return False
         else:
@@ -50,37 +50,41 @@ class GomokuGame():
         self.get_combined_board()
         last_move = np.where(self.state[ObsLayer.LAST_MOVE.value] == 1)
         # search for open threes
-        open_threes_board = self.search_for_open_threes()
-        self.state[ObsLayer.ILLEGAL_MOVES.value] = np.add(self.state[ObsLayer.PLAYER1.value], self.state[ObsLayer.PLAYER2.value])
-        if open_threes_board:
-            np.add()
-
-        # add open threes board the combined board
+        self.state[ObsLayer.ILLEGAL_MOVES.value] = np.add(self.state[ObsLayer.PLAYER1.value],
+                                                          self.state[ObsLayer.PLAYER2.value])
+        self.search_for_open_threes()
 
     def search_for_open_threes(self):
         pass
+        # If not the first move:
+        last_move = np.transpose(np.nonzero(self.state[ObsLayer.LAST_MOVE.value]))
         # In every direction:
-        # Go 2 steps and look if open three can be made.
-        # If yes, search for 2 open threes with Rules method
+        # Go 3 steps from last move and look if open three can be made.(No if opposite player is there or 2 open in a row or out of bound)
+        # If yes, search for 3 open threes with Rules method
         # If 2 open threes have been found, create board that will stay there for the rest of the game. Solve the problem how to see if open three have been broken.
+        #   self.open_threes[self.player].append((row, col))
         # Save all the previous open threes in a list of tuples and recheck them every time?
         # If some check doesnt pass then delete that tuple.
-        if self.open_threes:
-            for i in range(len(self.open_threes)):
-                # recheck if row and col is fine
-                row, col = self.open_threes[i][0], self.open_threes[i][1]
-                if self.state[ObsLayer.ILLEGAL_MOVES.value][row][col] or :
 
+        # OK when white places the stone it can only count as an invalid move 2 moves ahead because the next is black...
+        # ...so switch players with change_player and add to the respective open_three(self.player) the location.
+        if self.open_threes[self.player]:
+            for i in range(len(self.open_threes[self.player])):
+                # recheck if row and col is fine
+                row, col = self.open_threes[self.player][i][0], self.open_threes[self.player][i][1]
+                if self.state[ObsLayer.ILLEGAL_MOVES.value][row][col] \
+                        or not GomokuGame.rules.is_two_open_threes(row, col, self.player + 1, self.combined):
+                    self.open_threes.pop(i)
+                else:
+                    self.state[ObsLayer.ILLEGAL_MOVES.value][row][col] = 1
                 # check if open threes in this place
                 # if not open threes anymore delete that element self.open_threes.pop(i)
 
     def is_winning_move(self, row: int, col: int) -> bool:
-        if GomokuGame.rules.is_winning_condition(row, col, self.player, self.board, self.captures):
-            return True
-        return False
+        return GomokuGame.rules.is_winning_condition(row, col, self.player + 1, self.combined, self.captures)
 
     def check_for_captures(self, row: int, col: int) -> Union[int, None]:
-        capture_check = GomokuGame.rules.is_capturing(row, col, self.player, self.board)
+        capture_check = GomokuGame.rules.is_capturing(row, col, self.player + 1, self.combined)
         if capture_check is not None:
             num_captures = int(len(capture_check) // 2)
             for i in range(num_captures):
@@ -97,8 +101,9 @@ class GomokuGame():
         pos1_row, pos1_col = pos1
         pos2_row, pos2_col = pos2
         self.captures[self.player] += 2
-        # self.board.set(pos1_row, pos1_col, 0)
-        # self.board.set(pos2_row, pos2_col, 0)
+        opp = self.get_other_player()
+        self.state[opp][pos1_row][pos1_col] = 0
+        self.state[opp][pos2_row][pos2_col] = 0
 
     def make_move(self, row: int, col: int):
         if self.is_valid_move(row, col):
@@ -110,13 +115,19 @@ class GomokuGame():
 
     def place_stone(self, row: int, col: int) -> None:
         self.board.set(row, col, self.player)
-        # self.change_player()
 
-    def change_player(self):
-        if self.player == 1:
-            self.player = 2
+    def get_other_player(self):
+        if self.player == 0:
+            return 1
         else:
-            self.player = 1
+            return 0
 
     def get_illegal_moves(self):
         pass
+
+    def print_layers(self):
+        for layer in ObsLayer:
+            print(layer.name)
+            print('-' * GomokuGame.SIZE * 2)
+            print(self.state[layer.value])
+            print('-' * 19 * 2)
